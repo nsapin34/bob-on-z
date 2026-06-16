@@ -1,0 +1,45 @@
+{
+    "mcpServers": {
+        "watsonx-orchestrate-adk-docs": {
+            "type": "streamable-http",
+            "url": "https://developer.watson-orchestrate.ibm.com/mcp"
+        },
+        "watsonx-orchestrate-adk": {
+            "command": "uvx",
+            "args": [
+                "ibm-watsonx-orchestrate-mcp-server"
+            ],
+            "env": {
+                "WXO_MCP_WORKING_DIRECTORY": "C:/Users/082037706/Documents/2026/accelerator/git/bob/bob-MCP-wxo/wxo-files",
+                "WXO_MCP_DEBUG": ""
+            },
+            "timeout": 300,
+            "alwaysAllow": []
+        },
+        "wxo-threads": {
+            "command": "uvx",
+            "args": [
+                "--from",
+                "wxo-threads-mcp-server",
+                "--index-url",
+                "https://test.pypi.org/simple/",
+                "--extra-index-url",
+                "https://pypi.org/simple/",
+                "wxo-threads-mcp-server"
+            ],
+            "env": {
+                "WXO_API_ENDPOINT": "https://api.us-south.watson-orchestrate.cloud.ibm.com/instances/2dc5b062-6a29-4686-9c76-bc25e5512255",
+                "WXO_API_KEY": "GTLI6TuscI1DBJd0EwQbJbTAzpNCrqAQA1JDKPj0ARSn",
+                "WXO_DEFAULT_AGENT_ID": "2724102a-00d0-4384-813f-ec9082a93e83",
+                "WXO_TIMEOUT": "30",
+                "WXO_LOG_LEVEL": "DEBUG"
+            },
+            "timeout": 300,
+            "disabled": false,
+            "alwaysAllow": [
+                "chat_with_agent",
+                "get_last_agent_log"
+            ]
+        }
+    }
+}
