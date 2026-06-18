@@ -1,44 +1,72 @@
 ## Welcome to the Bob wxo MCP servers lab!
 
 You will learn how to:
- - Install and configure watsonx Orchestrate ADK to interact with a watsonx Orchestrate instance
- - Configure Bob MCP servers to work with the watsonx Orchestrate instance from Bob
- - Create an agent using a simple tool project with Bob in watsonx Orchestrate
+ - Install and configure watsonx Orchestrate ADK to interact with an wa4z instance
+ - Configure Bob MCP servers to work with the wa4z instance from Bob
+ - Create an agent using and a simple tool with Bob in watsonx Orchestrate
+ - Load these agent and tool in the wa4z instance and run them.
 
 ### Prerequisites: Install wxo ADK
 
-#### Join the Cloud
-In your email inbox, you have received an invitation to join the Cloud. Follow the instructions in the email to join the Cloud.
+#### Connect the wa4z instance 
 
-![Join Cloud](images/join-cloud-2.png)
+Connect your openvpn:
 
+![openvpn](images/openvpn/openvpn1.png)
 
-#### Get connected to [techzone](https://techzone.ibm.com) to check the status of your instance.
+Another DNS server has to be added to resolve the wa4z instance:
 
-![open Cloud](images/open-techzone.png)
+For windows:
 
-![click Cloud link](images/cloud-login.png)
+```powershell
+Add-DnsClientNrptRule -Namespace ".ocpgray.edu.ihost.com" -DnsSecEnable -NameServers ("10.3.34.1")
+```
 
-Check the cloud number in the top-right corner of your resource list page.
+For MAC ( NOT TESTED):
+```bash
+sudo mkdir -p /etc/resolver
+echo "nameserver 10.3.34.1" | sudo tee /etc/resolver/ocpgray.edu.ihost.com
+```
 
-![launch wxo](images/launch-wxo.png)
+Open your browser and type this url:
 
-![launch wxo2](images/launch-wxo-2.png)
+```url
+https://cpd-watsonx.apps.ocpgray.edu.ihost.com
+```
 
+select "OpenShift authentification" and click Continue:
+
+![openshift auth](images/openvpn/login1.png)
+
+then select "ldapShowcase":
+
+![openshift auth](images/openvpn/login2.png)
+
+type the provided username / password and click login:
+
+![openshift auth](images/openvpn/login3.png)
+
+Select instances the wxo:
+
+![openshift auth](images/openvpn/login4.png)
+
+![openshift auth](images/openvpn/login5.png)
+
+then "Open" and you will be connected the watsonx orchestrate instance:
+
+![openshift auth](images/openvpn/login6.png)
+
+![openshift auth](images/openvpn/login7.png)
 
 #### Install uv (if not already installed)
 
+Have a look at [uv installation instructions](https://docs.astral.sh/uv/getting-started/installation/) or directly follow these instructions depending on your operating system.
 
 **Windows:**
 To install uv on Windows, open PowerShell or Command Prompt and run:
 ```powershell
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
-Alternatively, you can use pip:
-```bash
-pip install uv
-```
-
 
 
 **Mac:**
@@ -46,14 +74,7 @@ To install uv on Mac, open Terminal and run:
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
-Or using Homebrew:
-```bash
-brew install uv
-```
-Or using pip:
-```bash
-pip install uv
-```
+
 
 After installation, verify uv is installed correctly by running:
 ```bash
@@ -62,63 +83,73 @@ uv --version
 
 
 #### Install ADK
-The current ADK requires Python 3.11 or later; anything older than 3.11 is not supported for installation.
 
-Create a Python virtual environment with this command:
+- Open New Window (Ctrl + Shift + N) within Bob IDE to start from a clean workspace.
+
+- Create and Open a new folder for your project (name it properly, here we use the folder named environment-setup just as an example)
+
+![adk](images/adk/adk1.png)
+
+Here the folder is "wxo-bob-23-24-june":
+
+![adk](images/adk/adk2.png)
+
+ - Click the search bar on the top and select Show and Run Commands
+ 
+![adk](images/adk/adk3.png)
+
+ - Type in “create” and select Python: Create Environment…
+ 
+![adk](images/adk/adk4.png)
+
+ - Select Venv if given some options (depends on what you have installed to your computer)
+ 
+ ![adk](images/adk/adk5.png)
+
+ - Select your Python installation, 3.11.x – 3.13.x (3.12.9 recommended - the current ADK requires Python 3.11 or later; anything older than 3.11 is not supported for installation)
+ 
+![adk](images/adk/adk6.png)
+
+The Python virtual environment will be installed and you’ll see the .venv folder under your project folder in a couple of seconds.
+
+## NOT SURE TO DO THAT PART
+**Rename it to venv** (this is because the wxO extensions default setting)
+
+![adk](images/adk/adk7.png)
+
+![adk](images/adk/adk8.png)
+
+## END OF NOT SURE TO DO THAT PART
+
+ - Click the Extensions icon from the menu bar on the left, search for “watsonx” and click Install on the watsonx Orchestrate ADK extension
+
+![adk](images/adk/adk9.png)
+
+
+This will install the extension (note that the extension is still in preview)
+
+Now that you have the wxO ADK extension installed, you can see the ADK information on the bottom right of Bob IDE window.
+
+Hoover the ADK: ❌ – **BUT DO NOT INSTALL THE ADK VIA THE UI** (We want to install a specific version of the ADK because the latest version has a bug related to watsonx Orchestrate on-prem that we want to avoid.)
+
+![adk](images/adk/adk10.png)
+
+Open a terminal. The Python virtual environment you recently created should now be activated.:
+
+![adk](images/adk/adk11.png)
+
+![adk](images/adk/adk12.png)
+
+Install the ADK python package with:
+
 ```bash
-python -m venv venv
+pip install ibm-watsonx-orchestrate==2.6.0 ibm-watsonx-orchestrate-clients==2.7.0 ibm-watsonx-orchestrate-core==2.7.0
 ```
+![adk](images/adk/adk13.png)
 
-Activate the virtual environment:
+The ADK icon at the bottom will show the version of the ADK we installed within a few seconds ... or refresh the status clicking on the ❌.
 
-**Windows (CMD)**:
-```bash
-venv\Scripts\activate.bat
-```
-
-**Windows (PowerShell)**:
-```powershell
-venv\Scripts\Activate.ps1
-```
-
-**Mac/Linux**:
-```bash
-source venv/bin/activate
-```
-
-After activation, upgrade pip and install the ADK:
-```bash
-pip install --upgrade ibm-watsonx-orchestrate
-```
-
-![install-venv](images/install-venv.png)
-
-
-
-
-#### Configure the ADK Environment
-Create the "lab" environment in the ADK with:
-```bash 
-orchestrate env add -u https://api.us-south.watson-orchestrate.cloud.ibm.com/instances/e466ac09-1a5e-421f-ac0f-e4f7a52e7f02 -n bobi
-```
-Activate the ADK environment with:
-```bash
-orchestrate env activate bobi -a aCC3F9pNnjfTQ8CQNrsBKnqHJJdOBPrKoPgm4ClyDW7e
-```
-And test it with this command that lists the agents in our watsonx orchestrate instance:
-```bash
-orchestrate agents list
-```
-and this one that lists the tools in our watsonx orchestrate instance:
-
-```bash
-orchestrate tools list
-```
-
-![adk install](images/adk-env-config.png)
-
-
-### Installing "wxo Agent Architectect" in Bob
+### TO BE UPDATED: Installing "wxo Agent Architectect" in Bob
 
 Go to Modes in Bob:
 
@@ -141,29 +172,133 @@ Go to Bob MCP servers:
 
 ![bob mcp servers](images/MCP-servers/bob-mcp-servers.png)
 
-Install the watsonx Orchestrate ADK Docs MCP server:
+and open the project MCPs:
 
-![bob mcp servers](images/MCP-servers/install-MCP1.png)
+![bob mcp servers](images/mcp/mcp1.png)
 
-![bob mcp servers](images/MCP-servers/install-MCP1-confirmation.png)
+and insert this json in the file and save:
 
-Then install the second MCP server:
+```json
+{
+ "mcpServers": {
+     "wxo-docs": {
+     "command": "uvx",
+     "args": [
+         "mcp-proxy",
+         "--transport",
+         "streamablehttp",
+         "https://developer.watson-orchestrate.ibm.com/mcp"
+     ],
+     "alwaysAllow": [
+         "SearchIbmWatsonxOrchestrateAdk"
+     ],
+     "disabled": false
+     }
+ }
+ }
+```
+This MCP server is wxo-docs provides access to public documentation for the watsonx orchestrate ADK.
 
-![bob mcp servers](images/MCP-servers/install-MCP2.png)
+In the same file insert, the json for the orchestrate-adk MCP server:
 
-![bob mcp servers](images/MCP-servers/install-MCP2-2.png)
+```json
+{
+   "mcpServers": {
+     "watsonx-orchestrate-adk": {
+            "command": "uvx",
+            "args": [
+                "--with",
+                "ibm-watsonx-orchestrate==2.7.0",
+                "--with",
+                "fastmcp==2.14.5",
+                "ibm-watsonx-orchestrate-mcp-server==2.7.0"
+            ],
+            "env": {
+                "WXO_MCP_WORKING_DIRECTORY": "/path/to/root/of/project",
+                "WXO_MCP_DEBUG": ""
+            },
+            "timeout": 300,
+            "alwaysAllow": [
+                "list_agents",
+                "list_tools"
+            ]
+        }
+   }
+ }
+```
+**You have to change "/path/to/root/of/project" to the folder of your project. the provided path MUST BE within your Bob folder** 
+(example: **C:/Users/082037706/Documents/2026/bob-23-24-june/wxo-bob-23-24-june**)
 
-Then provide the path to your Bob repository where you and Bob will create the agent and tool files:
+This MCP server will be used by Bob to perform operations in the orchestrate instance (import agents/tools/knowledge bases - list agents/tools/knowledge bases ... )
 
-**the provided path MUST BE within your Bob folder** 
+Your final file should look like:
 
-![bob mcp servers](images/MCP-servers/install-MCP2-3.png)
+```json
+{
+    "mcpServers": {
+        "wxo-docs": {
+            "command": "uvx",
+            "args": [
+                "mcp-proxy",
+                "--transport",
+                "streamablehttp",
+                "https://developer.watson-orchestrate.ibm.com/mcp"
+            ],
+            "alwaysAllow": [
+                "SearchIbmWatsonxOrchestrateAdk"
+            ],
+            "disabled": false
+        },
+        "watsonx-orchestrate-adk": {
+            "command": "uvx",
+            "args": [
+                "--with",
+                "ibm-watsonx-orchestrate==2.7.0",
+                "--with",
+                "fastmcp==2.14.5",
+                "ibm-watsonx-orchestrate-mcp-server==2.7.0"
+            ],
+            "env": {
+                "WXO_MCP_WORKING_DIRECTORY": "C:/Users/082037706/Documents/2026/bob-23-24-june/wxo-bob-23-24-of-june",
+                "WXO_MCP_DEBUG": ""
+            },
+            "timeout": 300,
+            "alwaysAllow": [
+                "list_tools"
+            ]
+        }
+    }
+}
+```
 
-Remark:
-For Windows, the correct format is something like this:
-C:/Users/082037706/Documents/2026/accelerator/git/bob/bob-MCP-wxo/wxo-files
+Now, open a terminal:
 
-Test the ADK MCP server with a request like:
+![bob mcp servers](images/mcp/mcp2.png)
+
+add our watsonx orchestrate environnement in the adk:
+```bash
+orchestrate env add -n wxo-mop -u https://cpd-watsonx.apps.ocpgray.edu.ihost.com/orchestrate/watsonx/instances/1777035080824637 --insecure
+```
+
+and activate the environnement with:
+
+```bash
+orchestrate env activate wxo-mop -a 7ziDAsScYfnxbkDyInjcAKKXRaKwT8wNXTWJScaP
+```
+**The ADK environment activation is time-limited. In the next sections of this lab, if you encounter an error, do not hesitate to run this command to reactivate the connection between your ADK on your laptop and the watsonx Orchestrate instance.**
+
+You will have to provide your **CPD login** to activate your ADK env (something similar to nicolas.sapin@fr.ibm.com)
+
+![adk](images/adk/adk14.png)
+
+Then you can test your ADK environnement with a command to list the agents defined in the watsonx orchestrate instance (preview above):
+
+```bash
+orchestrate agents list
+```
+
+Now the magic starts ! You can run the same command inside Bob and test the ADK MCP server with a request like:
+
 ```bash
 list the agents in orchestrate using the watsonx-orchestrate-adk MCP server
 ```
@@ -179,65 +314,14 @@ You will see the agents in wxo:
 
 ![bob mcp servers](images/MCP-servers/test-adk-mcp-3.png)
 
-Install the 3rd wxo MCP server:
-
-![bob mcp servers](images/MCP-servers/install-MCP3-1.png)
-
-Add the following MCP server configuration in your mcp.json file.
-(After the modification your file should look like : [mcp.json](images/files/mcp.json))
-``` bash
-        "wxo-threads": {
-            "command": "uvx",
-            "args": [
-                "--from",
-                "wxo-threads-mcp-server",
-                "--index-url",
-                "https://test.pypi.org/simple/",
-                "--extra-index-url",
-                "https://pypi.org/simple/",
-                "wxo-threads-mcp-server"
-            ],
-            "env": {
-                "WXO_API_ENDPOINT": "https://api.us-south.watson-orchestrate.cloud.ibm.com/instances/e466ac09-1a5e-421f-ac0f-e4f7a52e7f02",
-                "WXO_API_KEY": "aCC3F9pNnjfTQ8CQNrsBKnqHJJdOBPrKoPgm4ClyDW7e",
-                "WXO_DEFAULT_AGENT_ID": "0bb33906-0776-49e2-9b60-0bccf934b54f",
-                "WXO_TIMEOUT": "30",
-                "WXO_LOG_LEVEL": "DEBUG"
-            },
-            "timeout": 300,
-            "disabled": false,
-            "alwaysAllow": [
-                "chat_with_agent",
-                "get_last_agent_log"
-            ]
-        }
-```
-
-
-
-You can test chatting with the default wxo agent (the agent ID provided in the MCP configuration file) with:
-
-``` bash
-Ask the wxo agent: "3 + 3 = ?"
-```
-
-![bob mcp servers](images/MCP-servers/test-threads-mcp1.png)
-
-get the logs of the last interaction with the agent:
-``` bash
-get the logs from the last interaction with the agent
-```
-
-![bob mcp servers](images/MCP-servers/get-the-logs.png)
-
 
 ### Create an Agent Using a Simple Tool Project with Bob in watsonx Orchestrate
 
-Now that the 3 MCP servers are correctly configured, we will use them to create a small project with Bob.
+Now that the 2 MCP servers are correctly configured, we will use them to create a small project with Bob.
 
 As the authentification between ADK in IBM Cloud may be expired, (re)activate the ADK environment from your **python venv** with:
 ```bash
-orchestrate env activate bobi -a aCC3F9pNnjfTQ8CQNrsBKnqHJJdOBPrKoPgm4ClyDW7e
+orchestrate env activate wxo-mop -a 7ziDAsScYfnxbkDyInjcAKKXRaKwT8wNXTWJScaP
 ```
 
 Create a tool **with BOB** that performs a loan calculation (change the path wxo-files/tools/loan_tool.py according to your project - it has to be visible by the ADK MCP server):
