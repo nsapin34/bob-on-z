@@ -88,42 +88,42 @@ uv --version
 
 - Create and Open a new folder for your project (name it properly, here we use the folder named environment-setup just as an example)
 
-![adk](images/adk/adk1.png)
+![adk](images/ADK/adk1.png)
 
 Here the folder is "wxo-bob-23-24-june":
 
-![adk](images/adk/adk2.png)
+![adk](images/ADK/adk2.png)
 
  - Click the search bar on the top and select Show and Run Commands
  
-![adk](images/adk/adk3.png)
+![adk](images/ADK/adk3.png)
 
  - Type in “create” and select Python: Create Environment…
  
-![adk](images/adk/adk4.png)
+![adk](images/ADK/adk4.png)
 
  - Select Venv if given some options (depends on what you have installed to your computer)
  
- ![adk](images/adk/adk5.png)
+ ![adk](images/ADK/adk5.png)
 
  - Select your Python installation, 3.11.x – 3.13.x (3.12.9 recommended - the current ADK requires Python 3.11 or later; anything older than 3.11 is not supported for installation)
  
-![adk](images/adk/adk6.png)
+![adk](images/ADK/adk6.png)
 
 The Python virtual environment will be installed and you’ll see the .venv folder under your project folder in a couple of seconds.
 
 ## NOT SURE TO DO THAT PART
 **Rename it to venv** (this is because the wxO extensions default setting)
 
-![adk](images/adk/adk7.png)
+![adk](images/ADK/adk7.png)
 
-![adk](images/adk/adk8.png)
+![adk](images/ADK/adk8.png)
 
 ## END OF NOT SURE TO DO THAT PART
 
  - Click the Extensions icon from the menu bar on the left, search for “watsonx” and click Install on the watsonx Orchestrate ADK extension
 
-![adk](images/adk/adk9.png)
+![adk](images/ADK/adk9.png)
 
 
 This will install the extension (note that the extension is still in preview)
@@ -132,20 +132,20 @@ Now that you have the wxO ADK extension installed, you can see the ADK informati
 
 Hoover the ADK: ❌ – **BUT DO NOT INSTALL THE ADK VIA THE UI** (We want to install a specific version of the ADK because the latest version has a bug related to watsonx Orchestrate on-prem that we want to avoid.)
 
-![adk](images/adk/adk10.png)
+![adk](images/ADK/adk10.png)
 
 Open a terminal. The Python virtual environment you recently created should now be activated.:
 
-![adk](images/adk/adk11.png)
+![adk](images/ADK/adk11.png)
 
-![adk](images/adk/adk12.png)
+![adk](images/ADK/adk12.png)
 
 Install the ADK python package with:
 
 ```bash
 pip install ibm-watsonx-orchestrate==2.6.0 ibm-watsonx-orchestrate-clients==2.7.0 ibm-watsonx-orchestrate-core==2.7.0
 ```
-![adk](images/adk/adk13.png)
+![adk](images/ADK/adk13.png)
 
 The ADK icon at the bottom will show the version of the ADK we installed within a few seconds ... or refresh the status clicking on the ❌.
 
@@ -283,7 +283,7 @@ orchestrate env add -n wxo-mop -u https://cpd-watsonx.apps.ocpgray.edu.ihost.com
 and activate the environnement with:
 
 ```bash
-orchestrate env activate wxo-mop -a 7ziDAsScYfnxbkDyInjcAKKXRaKwT8wNXTWJScaP
+orchestrate env activate wxo-mop -a YOUR_API_KEY
 ```
 **The ADK environment activation is time-limited. In the next sections of this lab, if you encounter an error, do not hesitate to run this command to reactivate the connection between your ADK on your laptop and the watsonx Orchestrate instance.**
 
@@ -321,7 +321,7 @@ Now that the 2 MCP servers are correctly configured, we will use them to create 
 
 As the authentification between ADK in IBM Cloud may be expired, (re)activate the ADK environment from your **python venv** with:
 ```bash
-orchestrate env activate wxo-mop -a 7ziDAsScYfnxbkDyInjcAKKXRaKwT8wNXTWJScaP
+orchestrate env activate wxo-mop -a YOUR_API_KEY
 ```
 
 Create a tool **with BOB** that performs a loan calculation (change the path wxo-files/tools/loan_tool.py according to your project - it has to be visible by the ADK MCP server):
