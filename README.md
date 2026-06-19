@@ -1,7 +1,7 @@
-## Welcome to the Bob wxo MCP servers lab!
+## Welcome to the Bob / Watsonx Orchestrate !
 
 You will learn how to:
- - Install and configure watsonx Orchestrate ADK to interact with an wa4z instance
+ - Install and configure watsonx Orchestrate ADK to interact with a Watsonx Orchestrate / wa4z instance
  - Configure Bob MCP servers to work with the wa4z instance from Bob
  - Create an agent using and a simple tool with Bob in watsonx Orchestrate
  - Load these agent and tool in the wa4z instance and run them.
@@ -112,15 +112,6 @@ Here the folder is "wxo-bob-23-24-june":
 
 The Python virtual environment will be installed and you’ll see the .venv folder under your project folder in a couple of seconds.
 
-## NOT SURE TO DO THAT PART
-**Rename it to venv** (this is because the wxO extensions default setting)
-
-![adk](images/ADK/adk7.png)
-
-![adk](images/ADK/adk8.png)
-
-## END OF NOT SURE TO DO THAT PART
-
  - Click the Extensions icon from the menu bar on the left, search for “watsonx” and click Install on the watsonx Orchestrate ADK extension
 
 ![adk](images/ADK/adk9.png)
@@ -149,22 +140,200 @@ pip install ibm-watsonx-orchestrate==2.6.0 ibm-watsonx-orchestrate-clients==2.7.
 
 The ADK icon at the bottom will show the version of the ADK we installed within a few seconds ... or refresh the status clicking on the ❌.
 
-### TO BE UPDATED: Installing "wxo Agent Architectect" in Bob
+### Creating "wxo Agent Architectect" mode in Bob
+
+We are going to create a mode called "wxo Agent Architect" in Bob. A mode defines how Bob should behave and guides the reasoning and execution plans it follows to accomplish its tasks.
+
+In the following sections, we will equip Bob with MCP servers (tools) that enable it to search the watsonx Orchestrate documentation and to manage agents, tools, and other watsonx Orchestrate resources through the watsonx Orchestrate ADK (Application Development Kit).
+
+This mode instructs Bob on when and how to use these MCP servers to effectively assist with the design, development, and management of watsonx Orchestrate solutions.
 
 Go to Modes in Bob:
 
 ![bob modes](images/modes/go-to-Bob-modes.png)
 
-Scroll down and install the "wxo Agent Architectect" mode:
+Click on +:
 
-![bob modes](images/modes/install-wxo-agent-architecte.png)
+![bob modes](images/modes/mod1.png)
 
-![bob modes](images/modes/install-wxo-agent-architecte-2.png)
+Enter the following text in:
+Slug:
+
+```bash
+agent-architect
+```
+
+Name:
+
+```bash
+Wxo agent Architect
+```
+
+Description:
+
+```bash
+Specialized mode for building, testing, and deploying watsonx Orchestrate agents, tools, workflows, and knowledge bases
+```
+
+Scope: Project
+
+Role Definition:
+```bash
+You are Bob, a highly skilled watsonx Orchestrate architect with deep expertise in agent design, agentic workflows, tool development, and deployment best practices. You excel at creating production-ready agents following IBM's ADK patterns and guidelines.
+```
+
+When to use:
+```bash
+Use this mode when agents, tools, agentic workflows, knowledge bases, connections, or toolkits need to be created, tested, or deployed for watsonx Orchestrate
+```
+
+Mode-specific Custom Instructions
+```bash
+## Core Workflow Principles
+
+### 1. Research First, Build Second
+- ALWAYS use wxo-docs MCP server's search_ibm_watsonx_orchestrate_adk tool BEFORE starting any implementation
+- Search for relevant patterns, examples, and best practices specific to your task
+- Use query_docs_filesystem_ibm_watsonx_orchestrate_adk to read full documentation pages when needed
+- Leverage the orchestrate skill (mintlify://skills/orchestrate) for comprehensive guidance
+
+### 2. Discovery and Context Gathering
+- Use orchestrate-adk MCP server's list_tools to discover available tools for agent composition
+- Use list_agents to find potential collaborator agents
+- Extract platform information using orchestrate-adk MCP server when needed
+- Check existing implementations before creating new ones
+
+### 3. Agent Design Best Practices
+
+**Agent Instructions:**
+- Write clear, conversational directives in natural language
+- Define tone and style explicitly (professional, friendly, concise)
+- Include specific tool usage rules and when to use each tool
+- Set error-handling guidance for missing information
+- Keep instructions focused - avoid overloading with too many directives
+- Example: "Use the CRM API tool for customer data. If data is missing, ask clarifying questions before proceeding."
+
+**Agent Styles:**
+- Use "default" style for simple, tool-centric tasks with flexible sequencing
+- Use "agentic workflow" style for complex, multi-step processes requiring strict orchestration
+- Default style works best for: single-step tasks, scenarios needing flexibility, multiple tools without strict sequencing
+
+**Conversation Management:**
+- Enable context compaction for long conversations
+- Set context_compaction_threshold below LLM's max context window (e.g., 20K for 32K models)
+- Use sliding window (Level 3) only for indefinitely running conversations
+- Keep large_message_detect_structured enabled to preserve JSON/XML integrity
+
+### 4. Tool Development Best Practices
+
+**Python Tools:**
+- Use async I/O patterns for external API calls
+- Implement proper error handling with try-except blocks
+- Use connection pooling for HTTP clients (module-level client reuse)
+- Stream large responses instead of loading into memory
+- Use platform context (AgentRun) for state management
+- Never include ibm-watsonx-orchestrate in requirements.txt
+
+**Toolkits:**
+- Group related tools into toolkits for better organization
+- Remember: updating toolkits requires redeploying affected agents
+- Test toolkit changes in draft environment first
+- Plan maintenance windows for toolkit updates
+
+### 5. Agentic Workflow Development
+
+**Workflow Structure:**
+- Use @flow decorator with proper metadata (name, display_name, description, schemas)
+- Build flows using tool(), agent(), and edge-building functions
+- Use sequence() for linear flows, edge() for custom connections
+- Implement Branch nodes with Python expressions for conditional logic
+- Use foreach() for iterating over collections
+- Connect form buttons to next nodes using edge() with button_label parameter
+
+**Testing Workflows:**
+- Create async test scripts before adding to agents
+- Use compile_deploy() to compile and deploy for testing
+- Use invoke() for simple testing, invoke_events() for detailed event monitoring
+- Test in draft environment thoroughly before promoting to live
+
+### 6. Knowledge Base Management
+
+**Important Constraints:**
+- Knowledge bases are TENANT-SCOPED, not environment-scoped
+- Updates apply to BOTH draft and live simultaneously
+- One agent can only have ONE knowledge base
+- Deploy knowledge bases BEFORE agents that reference them
+- Test in dev-qa-tenant first before deploying to prod-tenant
+
+### 7. Deployment Strategy
+
+**Environment Workflow:**
+- Draft environment = development/testing
+- Live environment = production/end-users
+- Developer Edition only has draft environment
+
+**Deployment Order:**
+1. Deploy flows first (if any): `orchestrate tools import -k flow -f <file>`
+2. Deploy knowledge bases (if any): `orchestrate knowledge-bases import -f <file>`
+3. Deploy agent (tools auto-deploy via agent's tools: section): `orchestrate agents import -f <file>`
+4. Test thoroughly in draft
+5. Promote to live: `orchestrate agents deploy --name <agent-name>`
+
+**Multi-Tenant Best Practices:**
+- Use dev-qa-tenant for Dev (draft) and QA (live)
+- Use prod-tenant for PreProd (draft) and Prod (live)
+- Test in dev-qa-tenant before deploying to prod-tenant
+- Coordinate knowledge base updates carefully (affect both environments)
+
+### 8. Testing Strategy
+
+**Before Deployment:**
+- Test each tool individually using `orchestrate agents chat`
+- Perform concurrency testing for multi-user scenarios
+- Measure performance and compare with expectations
+- Validate all edge cases and error conditions
+
+**Draft Environment Testing:**
+- Thoroughly test in draft before promoting to live
+- Validate tool outputs and agent responses
+- Test knowledge base queries if applicable
+- Monitor for errors and unexpected behavior
+
+### 9. Code Quality Standards
+
+- Follow async/await patterns consistently
+- Implement comprehensive error handling
+- Use type hints for better code clarity
+- Keep functions focused and modular
+- Document complex logic with clear comments
+- Follow IBM ADK project structure patterns
+
+### 10. Documentation Guidelines
+
+- Do NOT create documentation unless explicitly requested
+- When creating docs, focus on usage examples and patterns
+- Include clear code snippets with explanations
+- Document any non-obvious design decisions
+
+## Common Pitfalls to Avoid
+
+- Don't include ibm-watsonx-orchestrate in requirements.txt
+- Don't forget to redeploy agents after toolkit updates
+- Don't assume knowledge base changes only affect draft
+- Don't overload agent instructions with too many directives
+- Don't skip testing in draft before promoting to live
+- Don't create new tools without checking for existing ones first
+```
+
+**Available tools**:
+Read Files, Edit Files, Execute Commands, **Use MCP**
+
+![bob modes](images/modes/mod2.png)
+
 
 now switch to the "wxo Agent Architectect" mode:
 
 ![bob modes](images/modes/switch-to-wxo-agent-architect.png)
-
 
 ### Install and Configure the wxo MCP Servers in Bob
 
@@ -324,89 +493,56 @@ As the authentification between ADK in IBM Cloud may be expired, (re)activate th
 orchestrate env activate wxo-mop -a YOUR_API_KEY
 ```
 
-Create a tool **with BOB** that performs a loan calculation (change the path wxo-files/tools/loan_tool.py according to your project - it has to be visible by the ADK MCP server):
+Create a tool **with BOB** the information on your Z system with :
 
 ```bash
-Write a Python tool for IBM watsonx Orchestrate that exposes a single function:
+Create a python tool for watsonx orchestrate in wxo/tools/get-sys-info_123.py where 123 has to be replaced with random numbers. The tool will have the same name (ie get-sys-info_123).
 
-def monthly_payment(principal: float, annual_rate: float, years: int) -> float:
-    ...
-Functional requirements:
+this python tool will use the ansible_lab connection in watsonx orchestrate that has been configured with:
+orchestrate connections set-credentials -a ansible_lab --env draft \
+  -e user=XXXX \
+  -e password=XXXX \
+  -e url_base=XXXX \
+  -e port=XXXX
 
-The function calculates the fixed monthly payment for a loan (mortgage-style amortization).
+the tools will use the connection values to get the info from the Z system with this API:
 
-Parameters:
+curl -GET \
+  --url "${url_base}:${port}/zosmf/info" \
+  -u "${user}:${PASS}" \
+  -H "Origin: ${url_base}" \
+  -H "X-CSRF-ZOSMF-HEADER: true" \
+  -k
 
-principal: total loan amount (float).
-
-annual_rate: annual interest rate in percent (e.g. 4.5 for 4.5%).
-
-years: loan duration in years (integer).
-
-Use the standard amortization formula with monthly compounding.
-
-Correctly handle the edge case where annual_rate is 0 (no interest).
-
-Return the monthly payment as a float rounded to 2 decimal places.
-
-Raise a clear error (ValueError) for invalid inputs (negative or zero principal, non-positive years, negative rate).
-
-Code and structure requirements:
-
-Use only the Python standard library (no external dependencies).
-
-Add type hints and concise docstrings.
-
-Organize the code as a watsonx Orchestrate tool:
-
-Place the implementation in wxo-files/tools/loan_tool_XXXX.py where you have to replace XXXX with your own unique identifier. the name of the tool should be loan_tool_XXXX.
-
-The file must define the monthly_payment function as the main callable entry point.
 ```
 
 
 Now ask Bob to import the tool that has been created with something like:
 
 ```bash
-import the python tool you have just created in wxo.
+import the python tool you have just created in wxo with the MCP server.
 ```
 
 Then ask Bob to create an agent file that uses this tool (change the path if necessary):
 
 ```bash
-create an agent file in wxo-files\agents\loan_advisor_agent_XXXX.yaml directory.  this agent have to use the loan_tool tool you have just created to provide information about loan payments. The name and the display name of the agent file should be loan_advisor_agent_XXXX where you have to replace XXXX with your own unique identifier. The agent should be able to answer questions about loan payments and provide the monthly payment amount for a given loan amount, interest rate, and term. The agent should be able to handle edge cases and provide clear error messages. The agent should be able to be imported in wxo.
+Create an agent for wxo in wxo/agents/agent_sys_info_123.yaml where 123 are the same random numbers than for the tool you have just created. The display name has to contain 123.
 
+This agent will use:
+ - the get-sys-info_123 to provide the system info to the user
+ - the virtual-model/watsonx/ibm/granite-4-h-small model
 ```
-Now import your newly created agent file in wxo with:
+If not already done by Bob, now import your newly created agent file in wxo with:
 ```bash
 import the agent file you have just created in wxo.
 ```
 
-Get the ID of your agent and use it to configure the 3rd MCP server:
-
-```bash
-What is the agent ID of the loan advisor agent you have just imported in wxo ?
-```
-
-![bob mcp servers](images/project/get-agent-ID.png)
-
-![configure 3rd MCP](images/project/configure-3rd-MCP.png)
-
-Restart the MCP server:
-
-![Restart the MCP server](images/project/restart-MCP-server.png)
-
 Now ask Bob to request the agent:
 
 ```bash
-What would my monthly payment be for a $200,000 mortgage at 4.5% for 30 years?
+ask the agent "Give me the system Z information"
 ```
 
-And you can ask to get the logs from the last execution with the next command, it could be interesting to get these logs if there are errors during the agent request execution:
-
-```bash
-get the logs from the execution of the loan advisor agent.
-```
 
 You can also connect to the wxo UI to query the agent:
 ![wxo UI](images/project/wxo-UI.png)
@@ -414,26 +550,6 @@ You can also connect to the wxo UI to query the agent:
 
 BONUS:
 
-Use Case: Currency Converter Agent
+Use Case: Make a second tool with Bob to use this API to get other information from the Z system:
 
-Objective
-
-Create a helpful Currency Converter Agent that can instantly convert any amount between world currencies (e.g. “Convert 250 EUR to USD” or “What is 1500 GBP in JPY?”).
-What you will build
-
-A Python tool (currency_converter_tool.py) that calls the free Frankfurter API (no API key required)
-An agent (currency_converter_agent.yaml) that uses this tool
-
-Your mission
-
-Ask Bob to create the Python tool that contains a function convert_currency(amount, from_currency, to_currency).
-
-Ask Bob to create the agent file that uses this tool.
-
-Import both the tool and the agent into watsonx Orchestrate using the ADK MCP server (same method as the loan calculator).
-
-Test your agent by asking Bob or the watsonx Orchestrate UI questions like:
-
-“Convert 500 EUR to USD”
-
-“How much is 1200 GBP in CAD?”
+https://10.3.58.61:4433/zosmf/restconsoles/v1/log?timeRange=10m&direction=backward
