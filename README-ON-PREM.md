@@ -2,53 +2,61 @@
 
 You will learn how to:
  - Install and configure watsonx Orchestrate ADK to interact with a Watsonx Orchestrate / wa4z instance
- - Configure Bob MCP servers to work with the Watsonx Orchestrate instance from Bob
+ - Configure Bob MCP servers to work with the wa4z instance from Bob
  - Create an agent using and a simple tool with Bob in watsonx Orchestrate
  - Load these agent and tool in the wa4z instance and run them.
 
 ### Prerequisites: Install wxo ADK
 
-#### Connect the Watsonx Orchestrate instance 
+#### Connect the wa4z instance 
 
-You must have received an email from IBM cloud. Click on Join and complete the procedure:
+Connect your openvpn:
 
-![cloud](images/cloud/cloud1.png)
+![openvpn](images/openvpn/openvpn1.png)
 
-#### Get connected to [techzone](https://techzone.ibm.com) to check the status of your instance.
+Another DNS server has to be added to resolve the wa4z instance:
 
-Give your email associated with your IBM ID and click continue:
+For windows:
 
-![open Cloud](images/cloud/cloud2.png)
+```powershell
+Add-DnsClientNrptRule -Namespace ".ocpgray.edu.ihost.com" -DnsSecEnable -NameServers ("10.3.34.1")
+```
 
-Go to "My reservations":
+For MAC ( NOT TESTED):
+```bash
+sudo mkdir -p /etc/resolver
+echo "nameserver 10.3.34.1" | sudo tee /etc/resolver/ocpgray.edu.ihost.com
+```
 
-![click Cloud link](images/cloud/cloud3.png)
+Open your browser and type this url:
 
-Select this instance of Watsonx Orchestrate and click "Open this environment":
+```url
+https://cpd-watsonx.apps.ocpgray.edu.ihost.com
+```
 
-![click Cloud link](images/cloud/cloud4.png)
+select "OpenShift authentification" and click Continue:
 
-Retrieve the IBM cloud name and click the link:
+![openshift auth](images/openvpn/login1.png)
 
-![click Cloud link](images/cloud/cloud5.png)
+then select "ldapShowcase":
 
-Check the cloud number in the top-right corner of your resource list page and click on the watsonx orchestrate instance:
+![openshift auth](images/openvpn/login2.png)
 
-![launch wxo](images/cloud/cloud6.png)
+type the provided username / password and click login:
 
-Then click on launch Watsonx Orchestrate:
+![openshift auth](images/openvpn/login3.png)
 
-![launch wxo2](images/cloud/cloud7.png)
+Select instances the wxo:
 
-Click on "Manage agents" to work on the agents that have been defined in the Watsonx Orchestrate instance. It will be needed later in this lab when IBM Bob will have deployed agents in this instance:
+![openshift auth](images/openvpn/login4.png)
 
-![launch wxo2](images/cloud/cloud8.png)
+![openshift auth](images/openvpn/login5.png)
 
-For the moment, only the default agent "Askorchestrate" is available in the instance:
+then "Open" and you will be connected the watsonx orchestrate instance:
 
-![launch wxo2](images/cloud/cloud9.png)
+![openshift auth](images/openvpn/login6.png)
 
-Now you have access to the Watsonx Orchestrate instance, we are going to configure Bob so that Bob can create and deploy agents and tools in this watsonx orchestrate instance.
+![openshift auth](images/openvpn/login7.png)
 
 #### Install uv (if not already installed)
 
@@ -111,20 +119,26 @@ The Python virtual environment will be installed and you’ll see the .venv fold
 
 This will install the extension (note that the extension is still in preview)
 
-Now that you have the wxo ADK extension installed, you can see the ADK information on the bottom right of Bob IDE window.
+Now that you have the wxO ADK extension installed, you can see the ADK information on the bottom right of Bob IDE window.
 
-Click on the ADK: ❌ 
+Hoover the ADK: ❌ – **BUT DO NOT INSTALL THE ADK VIA THE UI** (We want to install a specific version of the ADK because the latest version has a bug related to watsonx Orchestrate on-prem that we want to avoid.)
 
 ![adk](images/ADK/adk10.png)
 
-And click on Install Orchestrate ADK and wait until the completion message:
+Open a terminal. The Python virtual environment you recently created should now be activated.:
 
-![adk](images/ADK/adk-install1.png)
+![adk](images/ADK/adk11.png)
 
-Bob UI displays the version of your ADK:
+![adk](images/ADK/adk12.png)
 
-![adk](images/ADK/adk-install2.png)
+Install the ADK python package with:
 
+```bash
+pip install ibm-watsonx-orchestrate==2.6.0 ibm-watsonx-orchestrate-clients==2.7.0 ibm-watsonx-orchestrate-core==2.7.0
+```
+![adk](images/ADK/adk13.png)
+
+The ADK icon at the bottom will show the version of the ADK we installed within a few seconds ... or refresh the status clicking on the ❌.
 
 ### Creating "wxo Agent Architectect" mode in Bob
 
@@ -363,15 +377,18 @@ In the same file insert, the json for the orchestrate-adk MCP server:
             "command": "uvx",
             "args": [
                 "--with",
-                "ibm-watsonx-orchestrate==2.11.0",
-                "ibm-watsonx-orchestrate-mcp-server==2.11.0"
+                "ibm-watsonx-orchestrate==2.7.0",
+                "--with",
+                "fastmcp==2.14.5",
+                "ibm-watsonx-orchestrate-mcp-server==2.7.0"
             ],
             "env": {
-                "WXO_MCP_WORKING_DIRECTORY": "C:/Users/082037706/Documents/2026/bob-23-24-june/wxo-bob-23-24-cloud",
+                "WXO_MCP_WORKING_DIRECTORY": "/path/to/root/of/project",
                 "WXO_MCP_DEBUG": ""
             },
             "timeout": 300,
             "alwaysAllow": [
+                "list_agents",
                 "list_tools"
             ]
         }
@@ -405,11 +422,13 @@ Your final file should look like:
             "command": "uvx",
             "args": [
                 "--with",
-                "ibm-watsonx-orchestrate==2.11.0",
-                "ibm-watsonx-orchestrate-mcp-server==2.11.0"
+                "ibm-watsonx-orchestrate==2.7.0",
+                "--with",
+                "fastmcp==2.14.5",
+                "ibm-watsonx-orchestrate-mcp-server==2.7.0"
             ],
             "env": {
-                "WXO_MCP_WORKING_DIRECTORY": "C:/Users/082037706/Documents/2026/bob-23-24-june/wxo-bob-23-24-cloud",
+                "WXO_MCP_WORKING_DIRECTORY": "C:/Users/082037706/Documents/2026/bob-23-24-june/wxo-bob-23-24-of-june",
                 "WXO_MCP_DEBUG": ""
             },
             "timeout": 300,
@@ -427,16 +446,19 @@ Now, open a terminal:
 
 add our watsonx orchestrate environnement in the adk:
 ```bash
-orchestrate env add -n wxo-mop-cloud -u https://api.us-south.watson-orchestrate.cloud.ibm.com/instances/e4e6487a-cc95-4bdd-8f86-dd95952c706f --type ibm_iam
+orchestrate env add -n wxo-mop -u https://cpd-watsonx.apps.ocpgray.edu.ihost.com/orchestrate/watsonx/instances/1777035080824637 --insecure
 ```
 
 and activate the environnement with:
 
 ```bash
-orchestrate env activate wxo-mop-cloud -a YOUR_API_KEY
+orchestrate env activate wxo-mop -a YOUR_API_KEY
 ```
 **The ADK environment activation is time-limited. In the next sections of this lab, if you encounter an error, do not hesitate to run this command to reactivate the connection between your ADK on your laptop and the watsonx Orchestrate instance.**
 
+You will have to provide your **CPD login** to activate your ADK env (something similar to nicolas.sapin@fr.ibm.com)
+
+![adk](images/adk/adk14.png)
 
 Then you can test your ADK environnement with a command to list the agents defined in the watsonx orchestrate instance (preview above):
 
@@ -507,9 +529,8 @@ Then ask Bob to create an agent file that uses this tool (change the path if nec
 Create an agent for wxo in wxo/agents/agent_calculator_123.yaml where 123 are the same random numbers than for the tool you have just created. The name of the agent and display name has to contain agent, calculator and 123.
 
 This agent will use:
- - the cylinder_calculator_123 tool
- - the GPT OSS 120 B model (check in the documentation how to specify that model)
-
+ - the cylinder_calculator_123 tool  
+ - the virtual-model/watsonx/ibm/granite-4-h-small model
 ```
 If not already done by Bob, now import your newly created agent file in wxo with:
 ```bash
@@ -524,9 +545,11 @@ ask the agent "how many cylinders for a 200 MB dataset with a 30% margin"
 
 
 You can also connect to the wxo UI to query the agent:
-![wxo UI](images/project/wxo-UI-cloud.png)
+![wxo UI](images/project/wxo-UI.png)
 
 
-BONUS (if you have time):
+BONUS:
 
-Create your own tool that will fetch the current weather in a city of the user choice.
+Use Case: Make a second tool with Bob to use this API to get other information from the Z system:
+
+https://10.3.58.61:4433/zosmf/restconsoles/v1/log?timeRange=10m&direction=backward
