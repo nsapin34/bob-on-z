@@ -1,14 +1,14 @@
-## Welcome to the Bob / Watsonx Orchestrate !
+## Welcome to the Bob / watsonx Orchestrate !
 
 You will learn how to:
- - Install and configure watsonx Orchestrate ADK to interact with a Watsonx Orchestrate / wa4z instance
- - Configure Bob MCP servers to work with the Watsonx Orchestrate instance from Bob
+ - Install and configure watsonx Orchestrate ADK to interact with a watsonx Orchestrate / wa4z instance
+ - Configure Bob MCP servers to work with the watsonx Orchestrate instance from Bob
  - Create an agent using and a simple tool with Bob in watsonx Orchestrate
  - Load these agent and tool in the wa4z instance and run them.
 
 ### Prerequisites: Install wxo ADK
 
-#### Connect the Watsonx Orchestrate instance 
+#### Connect the watsonx Orchestrate instance 
 
 You must have received an email from IBM cloud. Click on Join and complete the procedure:
 
@@ -24,7 +24,7 @@ Go to "My reservations":
 
 ![click Cloud link](images/cloud/cloud3.png)
 
-Select this instance of Watsonx Orchestrate and click "Open this environment":
+Select this instance of watsonx Orchestrate and click "Open this environment":
 
 ![click Cloud link](images/cloud/cloud4.png)
 
@@ -36,11 +36,11 @@ Check the cloud number in the top-right corner of your resource list page and cl
 
 ![launch wxo](images/cloud/cloud6.png)
 
-Then click on launch Watsonx Orchestrate:
+Then click on launch watsonx Orchestrate:
 
 ![launch wxo2](images/cloud/cloud7.png)
 
-Click on "Manage agents" to work on the agents that have been defined in the Watsonx Orchestrate instance. It will be needed later in this lab when IBM Bob will have deployed agents in this instance:
+Click on "Manage agents" to work on the agents that have been defined in the watsonx Orchestrate instance. It will be needed later in this lab when IBM Bob will have deployed agents in this instance:
 
 ![launch wxo2](images/cloud/cloud8.png)
 
@@ -48,11 +48,18 @@ For the moment, only the default agent "Askorchestrate" is available in the inst
 
 ![launch wxo2](images/cloud/cloud9.png)
 
-Now you have access to the Watsonx Orchestrate instance, we are going to configure Bob so that Bob can create and deploy agents and tools in this watsonx orchestrate instance.
+Now you have access to the watsonx Orchestrate instance, we are going to configure Bob so that Bob can create and deploy agents and tools in this watsonx orchestrate instance.
 
 #### Install uv (if not already installed)
 
 Have a look at [uv installation instructions](https://docs.astral.sh/uv/getting-started/installation/) or directly follow these instructions depending on your operating system.
+
+**Linux:**
+
+To install uv on Linux, open Terminal and run:
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
 **Windows:**
 To install uv on Windows, open PowerShell or Command Prompt and run:
@@ -78,11 +85,11 @@ uv --version
 
 - Open New Window (Ctrl + Shift + N) within Bob IDE to start from a clean workspace.
 
-- Create and Open a new folder for your project (name it properly, here we use the folder named environment-setup just as an example)
+- Open a new folder for your project (name it properly, wxo-bob-23-24-june for example)
 
 ![adk](images/ADK/adk1.png)
 
-Here the folder is "wxo-bob-23-24-june":
+The folder "wxo-bob-23-24-june"is displayed on the left:
 
 ![adk](images/ADK/adk2.png)
 
@@ -345,7 +352,7 @@ and insert this json in the file and save:
          "https://developer.watson-orchestrate.ibm.com/mcp"
      ],
      "alwaysAllow": [
-         "SearchIbmWatsonxOrchestrateAdk"
+         "SearchIbmwatsonxOrchestrateAdk"
      ],
      "disabled": false
      }
@@ -397,7 +404,7 @@ Your final file should look like:
                 "https://developer.watson-orchestrate.ibm.com/mcp"
             ],
             "alwaysAllow": [
-                "SearchIbmWatsonxOrchestrateAdk"
+                "SearchIbmwatsonxOrchestrateAdk"
             ],
             "disabled": false
         },
@@ -474,7 +481,7 @@ orchestrate env activate wxo-mop -a YOUR_API_KEY
 Create a tool **with BOB** the information on your Z system with :
 
 ```bash
-write a python tool for watsonx orchestrate in wxo\tools\cylinder_calculator_123.py where 123 have to be replaced by random numbers. The tool will the same name cylinder_calculator_123.
+write a python tool for watsonx orchestrate in wxo\tools\cylinder_calculator_123.py where 1, 2, and 3 have to be replaced by random numbers. The tool will have the same name: cylinder_calculator_123 (with the same random numbers).
 
 the tool have to estimate the number of IBM 3390 DASD cylinders required to store a dataset of a given size.
 
